@@ -25,20 +25,11 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [loading, setLoading] = useState(true);
   const [addedItemIds, setAddedItemIds] = useState({});
-  const [copiedUrl, setCopiedUrl] = useState(false);
   
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('search') || '';
-
-  const apkUrl = typeof window !== 'undefined' ? `${window.location.origin}/FreshMart-FinalApp.apk` : '/FreshMart-FinalApp.apk';
-
-  const copyApkUrl = () => {
-    navigator.clipboard.writeText(apkUrl);
-    setCopiedUrl(true);
-    setTimeout(() => setCopiedUrl(false), 2000);
-  };
 
   useEffect(() => {
     fetchCategories();
@@ -126,9 +117,9 @@ const Home = () => {
       
       {/* 1. CLEAN LIGHT AISLE STRIP */}
       {!searchQuery && (
-        <div className="bg-white/95 backdrop-blur-md border-b border-gray-200/70 sticky top-[61px] sm:top-[69px] z-30 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+        <div className="bg-white/95 backdrop-blur-md border-b border-gray-200/70 sticky top-16 sm:top-20 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
           <div className="container mx-auto px-4 lg:px-8">
-            <div className="flex gap-2.5 sm:gap-4 overflow-x-auto py-3 scrollbar-hide snap-x items-center">
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto py-2.5 sm:py-3 scrollbar-hide snap-x items-center">
               
               {/* All Items Pill */}
               <button 
@@ -215,15 +206,6 @@ const Home = () => {
                     <span>Start Shopping</span>
                     <ArrowRight size={16} />
                   </button>
-
-                  <a 
-                    href="/FreshMart-FinalApp.apk" 
-                    download="FreshMart-FinalApp.apk"
-                    className="bg-white hover:bg-gray-50 text-slate-700 border border-gray-200 px-5 py-3 rounded-xl font-bold text-sm shadow-sm transition-all flex items-center gap-2 group"
-                  >
-                    <Smartphone size={16} className="text-emerald-600 group-hover:scale-110 transition-transform" />
-                    <span>Get App (v2.4 APK)</span>
-                  </a>
                 </div>
 
               </div>
@@ -351,86 +333,6 @@ const Home = () => {
         )}
       </div>
 
-      {/* 4. LIGHT APP BANNER WITH CURRENT VERSION & DIRECT URL */}
-      {!searchQuery && (
-        <div className="container mx-auto px-4 lg:px-8 mt-12">
-          <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-100/60 rounded-3xl p-6 sm:p-10 border border-emerald-200/80 shadow-sm">
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-              <div className="max-w-xl">
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-emerald-800 font-extrabold text-xs shadow-sm border border-emerald-100">
-                    <Smartphone size={13} className="text-emerald-600" />
-                    <span>Mobile Grocery App</span>
-                  </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow-sm">
-                    Current Version: v2.4 (Latest)
-                  </span>
-                  <span className="text-xs text-slate-500 font-medium">
-                    17.03 MB • Android 8.0+
-                  </span>
-                </div>
-
-                <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
-                  Get FreshMart App on your Android Phone
-                </h3>
-                <p className="text-slate-600 text-xs sm:text-sm mt-1.5 leading-relaxed">
-                  Faster 10-minute checkout, live dark-store order tracking, executive admin controls, and instant doorstep alerts.
-                </p>
-
-                {/* Direct Download URL Bar with 1-Click Copy */}
-                <div className="mt-5 p-2 bg-white/95 backdrop-blur-sm border border-emerald-200/90 rounded-2xl flex flex-col sm:flex-row items-stretch sm:items-center gap-2 max-w-lg shadow-sm">
-                  <div className="flex items-center gap-2 px-3 py-1 flex-grow overflow-hidden">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex-shrink-0">URL:</span>
-                    <span className="text-xs font-mono font-bold text-emerald-800 truncate select-all">
-                      {apkUrl}
-                    </span>
-                  </div>
-                  <button
-                    onClick={copyApkUrl}
-                    className="flex-shrink-0 px-3.5 py-2 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 font-bold text-xs rounded-xl border border-gray-200/80 transition-all flex items-center justify-center gap-1.5 active:scale-95"
-                    title="Copy direct APK download link"
-                  >
-                    {copiedUrl ? (
-                      <>
-                        <Check size={14} className="text-emerald-600" />
-                        <span className="text-emerald-700 font-extrabold">Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy size={14} />
-                        <span>Copy URL</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full sm:w-auto">
-                <a 
-                  href="/FreshMart-FinalApp.apk" 
-                  download="FreshMart-FinalApp.apk"
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white px-7 py-3.5 rounded-2xl font-black text-sm shadow-md shadow-emerald-600/25 active:scale-95 transition-all flex items-center justify-center gap-2.5 whitespace-nowrap text-center"
-                >
-                  <Download size={18} />
-                  <span>Download APK (v2.4)</span>
-                </a>
-
-                <a
-                  href="/FreshMart-FinalApp.apk"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="bg-white hover:bg-gray-50 text-slate-700 border border-gray-200 px-5 py-2.5 rounded-2xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 text-center shadow-sm"
-                >
-                  <ExternalLink size={14} className="text-emerald-600" />
-                  <span>Direct Download Link</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
       <style dangerouslySetInnerHTML={{__html: `
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

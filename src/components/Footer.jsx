@@ -66,28 +66,9 @@ const Footer = () => {
               </span>
             </Link>
             
-            <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-6 font-medium">
+            <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-4 font-medium">
               Your neighborhood quick-commerce destination for daily essentials, organic fruits, vegetables, and pantry staples delivered in 10 minutes.
             </p>
-
-            {/* App Promotion Pill */}
-            <div className="bg-emerald-50 border border-emerald-200/80 p-3 rounded-2xl flex items-center gap-3 w-full max-w-sm">
-              <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
-                <Smartphone size={18} />
-              </div>
-              <div className="leading-tight">
-                <p className="text-xs font-bold text-slate-900">Download FreshMart App</p>
-                <p className="text-[11px] text-emerald-700 font-semibold">1-Click Android APK Install</p>
-              </div>
-              <a 
-                href="/FreshMart-FinalApp.apk" 
-                download
-                className="ml-auto p-2 bg-white text-emerald-800 hover:bg-emerald-600 hover:text-white border border-emerald-200 rounded-xl transition shadow-sm"
-                title="Download APK"
-              >
-                <ArrowUpRight size={15} />
-              </a>
-            </div>
           </div>
 
           {/* Aisles (Col 5-7) */}

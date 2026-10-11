@@ -517,14 +517,14 @@ const ProductDetails = () => {
                   <div
                     key={rel._id || rel.id}
                     onClick={() => navigate(`/product/${rel._id || rel.id}`)}
-                    className="bg-white border border-gray-100 hover:border-emerald-300 rounded-2xl p-3 sm:p-3.5 cursor-pointer shadow-sm hover:shadow-md transition-all group flex flex-col"
+                    className="bg-white border border-slate-200/80 hover:border-emerald-400 rounded-2xl p-2.5 sm:p-3 cursor-pointer shadow-xs hover:shadow-md transition-all group flex flex-col hover:-translate-y-0.5"
                   >
-                    <div className="h-28 sm:h-36 w-full bg-gray-50 rounded-xl mb-3 flex items-center justify-center p-2 overflow-hidden">
+                    <div className="h-32 sm:h-36 w-full bg-slate-50 rounded-xl mb-2.5 flex items-center justify-center overflow-hidden relative">
                       {relIsImg ? (
                         <img
                           src={rel.emoji || rel.image}
                           alt={rel.name}
-                          className="max-h-full max-w-full object-contain transform group-hover:scale-105 transition-transform"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
                         <span className="text-5xl">{rel.emoji || rel.image || '🛍️'}</span>

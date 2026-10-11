@@ -358,7 +358,7 @@ const Home = () => {
   );
 };
 
-// --- MODIFIED CLEAN & PROFESSIONAL LIGHT PRODUCT CARD ---
+// --- MODERN QUICK-COMMERCE PRODUCT CARD ---
 const ProductCard = ({ product, addToCart, isRecentlyAdded }) => {
   const navigate = useNavigate();
 
@@ -366,49 +366,54 @@ const ProductCard = ({ product, addToCart, isRecentlyAdded }) => {
     navigate(`/product/${product._id || product.id}`);
   };
 
+  const rawImg = product.emoji || product.image;
+  const isEmoji = rawImg && rawImg.length <= 4 && !rawImg.startsWith('http');
+
   return (
     <div 
       onClick={handleCardClick}
-      className="bg-white border border-gray-100 hover:border-emerald-300 shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] rounded-2xl flex flex-col h-full relative transition-all duration-300 ease-out overflow-hidden cursor-pointer group p-3 sm:p-3.5 hover:-translate-y-1"
+      className="bg-white border border-slate-200/80 hover:border-emerald-400 shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:shadow-[0_10px_25px_rgba(16,185,129,0.12)] rounded-2xl flex flex-col h-full relative transition-all duration-300 ease-out overflow-hidden cursor-pointer group hover:-translate-y-1"
     >
       
-      {/* Product Image Stage */}
-      <div className="h-28 sm:h-36 w-full flex items-center justify-center bg-gray-50/70 rounded-xl mb-3 overflow-hidden relative group-hover:bg-emerald-50/20 transition-colors">
+      {/* Product Image Stage (Edge-to-Edge Hero Showcase) */}
+      <div className="w-full h-32 sm:h-40 bg-slate-50 relative overflow-hidden flex items-center justify-center">
         
-        {/* 10-Min Fast Pill */}
-        <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-md px-1.5 py-0.5 rounded-md flex items-center gap-1 shadow-sm border border-gray-200/60 z-20">
-          <Clock size={9} className="text-emerald-700" />
-          <span className="text-[9px] font-extrabold text-slate-800">10 MIN</span>
+        {/* 10-Min Delivery Pill */}
+        <div className="absolute top-2.5 left-2.5 bg-white/95 backdrop-blur-md px-2 py-0.5 rounded-lg flex items-center gap-1 shadow-sm border border-slate-200/70 z-10">
+          <Clock size={10} className="text-emerald-700" />
+          <span className="text-[10px] font-black tracking-tight text-slate-800">10 MINS</span>
         </div>
 
-        {((product.emoji || product.image) && (product.emoji || product.image).length <= 4 && !(product.emoji || product.image).startsWith('http')) ? (
+        {isEmoji ? (
           <span className="text-5xl sm:text-6xl transform group-hover:scale-110 transition-transform duration-300 select-none">
-            {product.emoji || product.image}
+            {rawImg}
           </span>
         ) : (
           <img 
-            onError={(e) => { e.target.onerror = null; e.target.src='https://via.placeholder.com/150?text=FreshMart'; }} 
-            src={(product.emoji || product.image) || 'https://via.placeholder.com/150?text=FreshMart'} 
+            onError={(e) => { e.target.onerror = null; e.target.src='https://via.placeholder.com/300x300?text=FreshMart'; }} 
+            src={rawImg || 'https://via.placeholder.com/300x300?text=FreshMart'} 
             alt={product.name || 'Grocery'} 
             loading="lazy"
-            className="object-contain h-[75%] w-[75%] transform group-hover:scale-110 transition-transform duration-300" 
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" 
           />
         )}
       </div>
       
-      {/* Product Info */}
-      <div className="flex flex-col flex-grow">
-        <h3 className="font-bold text-slate-900 text-xs sm:text-sm leading-snug mb-1 line-clamp-2 h-[34px] sm:h-[38px] tracking-tight group-hover:text-emerald-700 transition-colors">
-          {product.name || 'Grocery Item'}
-        </h3>
-        
-        <p className="text-gray-400 text-[11px] font-medium mb-3">
-          {product.unit || '1 pc'}
-        </p>
+      {/* Product Info & Action */}
+      <div className="p-3 sm:p-3.5 flex flex-col flex-grow justify-between gap-2.5">
+        <div>
+          <h3 className="font-bold text-slate-900 text-xs sm:text-sm leading-snug line-clamp-2 h-[34px] sm:h-[38px] tracking-tight group-hover:text-emerald-700 transition-colors">
+            {product.name || 'Grocery Item'}
+          </h3>
+          
+          <p className="text-slate-400 text-[11px] font-semibold mt-0.5">
+            {product.unit || '1 pc'}
+          </p>
+        </div>
         
         {/* Price & Action Button */}
-        <div className="mt-auto flex items-center justify-between pt-1 border-t border-gray-50">
-          <span className="font-extrabold text-sm sm:text-base text-slate-900">
+        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+          <span className="font-black text-sm sm:text-base text-slate-900 tracking-tight">
             ₹{product.price}
           </span>
           
@@ -417,15 +422,15 @@ const ProductCard = ({ product, addToCart, isRecentlyAdded }) => {
               e.stopPropagation();
               addToCart(product);
             }} 
-            className={`px-3 py-1.5 rounded-xl font-bold text-xs active:scale-95 transition-all duration-200 flex items-center gap-1 ${
+            className={`px-3 sm:px-4 py-1.5 rounded-xl font-black text-xs active:scale-95 transition-all duration-200 flex items-center gap-1 shadow-xs ${
               isRecentlyAdded 
-                ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/30' 
-                : 'bg-white text-emerald-700 border border-emerald-600 hover:bg-emerald-600 hover:text-white'
+                ? 'bg-emerald-600 text-white shadow-emerald-600/30' 
+                : 'bg-emerald-50 hover:bg-emerald-600 text-emerald-800 hover:text-white border border-emerald-300/80 hover:border-emerald-600'
             }`}
           >
             {isRecentlyAdded ? (
               <>
-                <Check size={13} /> Added
+                <Check size={13} strokeWidth={3} /> Added
               </>
             ) : (
               <span>Add +</span>

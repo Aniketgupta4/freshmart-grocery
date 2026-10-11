@@ -45,7 +45,7 @@ const Footer = () => {
               <HeartHandshake size={22} />
             </div>
             <div>
-              <h4 className="text-slate-900 font-bold text-sm">24/7 Helpline Support</h4>
+              <h4 className="text-slate-900 font-bold text-sm">12/7 Helpline Support</h4>
               <p className="text-slate-400 text-xs mt-0.5">Always ready to resolve issues</p>
             </div>
           </div>
@@ -114,7 +114,7 @@ const Footer = () => {
                   <a href="tel:8770191425" className="text-slate-900 font-bold hover:text-emerald-600 transition">
                     +91 8770191425
                   </a>
-                  <p className="text-[10px] text-slate-400">Toll-free 24/7 Helpline</p>
+                  <p className="text-[10px] text-slate-400">Toll-free 12/7 Helpline</p>
                 </div>
               </li>
               <li className="flex items-center gap-3">

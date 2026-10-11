@@ -17,18 +17,18 @@ const TermsOfUse = () => {
           <span className="text-slate-800">Terms of Use</span>
         </div>
 
-        {/* Hero Header */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#0F392B] via-[#144737] to-[#0A261D] rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 text-white shadow-xl shadow-[#0F392B]/10 border border-emerald-900/40">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        {/* Hero Header - Light Theme */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/50 rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 border border-emerald-100/90 shadow-[0_4px_25px_rgba(16,185,129,0.06)]">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-100/40 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-black tracking-wide uppercase mb-3">
-              <Scale size={13} className="text-emerald-300" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100/80 border border-emerald-200 text-emerald-800 text-xs font-black tracking-wide uppercase mb-3">
+              <Scale size={13} className="text-emerald-700" />
               Service Terms & Conditions
             </div>
-            <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
+            <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900">
               Terms of Use
             </h1>
-            <p className="mt-2 text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
+            <p className="mt-2 text-slate-600 text-xs sm:text-sm leading-relaxed max-w-2xl font-medium">
               Last updated: October 2026. Please read these terms carefully before accessing or placing orders through the FreshMart website or mobile application.
             </p>
           </div>

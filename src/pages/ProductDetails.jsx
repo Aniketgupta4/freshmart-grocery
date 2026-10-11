@@ -249,38 +249,47 @@ const ProductDetails = () => {
       </div>
 
       {/* 2. MAIN PRODUCT DETAILS GRID */}
-      <div className="container mx-auto px-4 lg:px-8 mt-6 sm:mt-10 max-w-6xl">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-start">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8 mt-4 sm:mt-10 max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-12 items-start">
           
-          {/* LEFT COLUMN: HERO SHOWCASE (ZERO OVERLAP) */}
+          {/* LEFT COLUMN: HERO SHOWCASE (CLEAN & PROPORTIONAL) */}
           <div className="md:col-span-6 lg:col-span-6">
-            <div className="bg-white rounded-[2rem] border border-gray-200/80 p-6 sm:p-8 shadow-sm flex flex-col">
+            <div className="bg-white rounded-2xl sm:rounded-[2rem] border border-gray-200/80 p-3.5 sm:p-7 shadow-sm flex flex-col">
               
-              {/* Dedicated Top Badges Bar - Completely above the image! */}
-              <div className="flex items-center justify-between gap-3 mb-6">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 font-black rounded-lg text-xs shadow-sm">
-                  <Zap size={13} className="fill-emerald-600 text-emerald-600" />
+              {/* Dedicated Top Badges Bar */}
+              <div className="flex items-center justify-between gap-2 mb-3.5 sm:mb-6">
+                <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 font-black rounded-lg text-[10px] sm:text-xs shadow-xs">
+                  <Zap size={12} className="fill-emerald-600 text-emerald-600" />
                   <span>10 MINS DELIVERY</span>
                 </div>
                 
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200 text-amber-900 font-black rounded-lg text-xs shadow-sm">
-                  <Sparkles size={13} className="text-amber-600" />
+                <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 bg-amber-50 border border-amber-200 text-amber-900 font-black rounded-lg text-[10px] sm:text-xs shadow-xs">
+                  <Sparkles size={12} className="text-amber-600" />
                   <span>100% CERTIFIED FRESH</span>
                 </div>
               </div>
 
-              {/* Dedicated Product Image Container (Large & Unobstructed) */}
-              <div className="w-full h-72 sm:h-96 bg-gray-50/70 rounded-2xl flex items-center justify-center p-6 overflow-hidden relative border border-gray-100 group">
+              {/* Dedicated Product Image Container (Proportional & Rich Showcase) */}
+              <div className="w-full aspect-[4/3] sm:aspect-square sm:max-h-[400px] bg-slate-50 rounded-2xl overflow-hidden relative border border-slate-100 flex items-center justify-center group shadow-xs">
                 {isImage ? (
-                  <img
-                    src={product.emoji || product.image}
-                    alt={product.name}
-                    className="max-h-full max-w-full object-contain transform group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/300?text=FreshMart';
-                    }}
-                  />
+                  <>
+                    {/* Ambient Fill Backdrop to blend edges seamlessly */}
+                    <img
+                      src={product.emoji || product.image}
+                      alt=""
+                      aria-hidden="true"
+                      className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-125 pointer-events-none"
+                    />
+                    <img
+                      src={product.emoji || product.image}
+                      alt={product.name}
+                      className="relative z-10 w-full h-full object-cover sm:object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://via.placeholder.com/400?text=FreshMart';
+                      }}
+                    />
+                  </>
                 ) : (
                   <span className="text-8xl sm:text-9xl transform group-hover:scale-110 transition-transform duration-300 select-none">
                     {product.emoji || product.image || '🛍️'}
@@ -289,7 +298,7 @@ const ProductDetails = () => {
               </div>
 
               {/* Trust Badges Strip Below Image */}
-              <div className="grid grid-cols-3 gap-2 mt-6 pt-5 border-t border-gray-100 text-center">
+              <div className="grid grid-cols-3 gap-2 mt-4 sm:mt-6 pt-4 border-t border-gray-100 text-center">
                 <div className="p-2.5 bg-gray-50/80 rounded-xl">
                   <Zap size={18} className="mx-auto text-emerald-600 mb-1" />
                   <p className="text-[11px] font-bold text-slate-800">10 Min Dispatch</p>

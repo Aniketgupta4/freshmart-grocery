@@ -10,10 +10,23 @@ import Profile from './pages/Profile';
 import Support from './pages/Support';
 import AdminDashboard from './pages/AdminDashboard';
 import ProductDetails from './pages/ProductDetails';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfUse from './pages/TermsOfUse';
+import ReturnPolicy from './pages/ReturnPolicy';
+import { useLocation } from 'react-router-dom';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
 
 const App = () => {
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-h-screen bg-bg-main flex flex-col font-sans text-gray-800">
         <Navbar />
         <main className="flex-grow flex flex-col">
@@ -26,6 +39,9 @@ const App = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-use" element={<TermsOfUse />} />
+            <Route path="/return-policy" element={<ReturnPolicy />} />
           </Routes>
         </main>
         <Footer />

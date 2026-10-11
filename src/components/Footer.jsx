@@ -95,6 +95,7 @@ const Footer = () => {
               <li><Link to="/cart" className="hover:text-emerald-600 hover:translate-x-1 inline-block transition">Shopping Cart</Link></li>
               <li><Link to="/profile" className="hover:text-emerald-600 hover:translate-x-1 inline-block transition">My Account</Link></li>
               <li><Link to="/support" className="hover:text-emerald-600 hover:translate-x-1 inline-block transition">Customer Care</Link></li>
+              <li><Link to="/return-policy" className="hover:text-emerald-600 hover:translate-x-1 inline-block transition">Return Policy</Link></li>
               <li><Link to="/login" className="hover:text-emerald-600 hover:translate-x-1 inline-block transition">Admin Portal</Link></li>
             </ul>
           </div>
@@ -145,10 +146,9 @@ const Footer = () => {
             © 2026 FreshMart India. All rights reserved.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 font-semibold">
-
-            <span className="hover:text-slate-600 transition cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-slate-600 transition cursor-pointer">Terms of Use</span>
-            <span className="hover:text-slate-600 transition cursor-pointer">FSSAI Certified</span>
+            <Link to="/privacy-policy" className="hover:text-emerald-600 transition">Privacy Policy</Link>
+            <Link to="/terms-of-use" className="hover:text-emerald-600 transition">Terms of Use</Link>
+            <Link to="/return-policy" className="hover:text-emerald-600 transition">Return Policy</Link>
           </div>
         </div>
 

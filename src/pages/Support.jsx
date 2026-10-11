@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { 
   PhoneCall, 
@@ -26,6 +27,8 @@ const QUICK_TOPICS = [
 ];
 
 const Support = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [tickets, setTickets] = useState([]);
@@ -35,33 +38,44 @@ const Support = () => {
   const [filter, setFilter] = useState('ALL'); // ALL, PENDING, RESOLVED
   const [feedbackSuccess, setFeedbackSuccess] = useState(false);
 
-  let user = null;
-  try {
-    user = JSON.parse(localStorage.getItem('user'));
-  } catch (e) {
-    user = null;
-  }
+  useEffect(() => {
+    let u = null;
+    try {
+      u = JSON.parse(localStorage.getItem('user'));
+    } catch (e) {
+      u = null;
+    }
 
-  const fetchTickets = async () => {
+    if (!u || !u.email) {
+      // Must be logged in to view support
+      navigate('/login');
+      return;
+    }
+    setUser(u);
+    fetchTickets(u);
+  }, [navigate]);
+
+  const fetchTickets = async (currentUser) => {
+    const activeUser = currentUser || user;
+    if (!activeUser || !activeUser.email) {
+      setTickets([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await api.get('/support');
       const allTickets = Array.isArray(res.data) ? res.data : [];
-      if (user && user.email) {
-        setTickets(allTickets.filter(t => t.email?.toLowerCase() === user.email.toLowerCase()));
-      } else {
-        setTickets(allTickets);
-      }
+      // Strictly show ONLY tickets belonging to this specific user's email
+      setTickets(allTickets.filter(t => t.email?.toLowerCase() === activeUser.email.toLowerCase()));
     } catch (e) {
       console.error("Failed to fetch tickets:", e);
+      setTickets([]);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchTickets();
-  }, [user?.email]);
 
   const handleSelectTopic = (topic) => {
     setSelectedTopic(topic.label);
@@ -70,6 +84,11 @@ const Support = () => {
 
   const submitTicket = async (e) => {
     e.preventDefault();
+    if (!user || !user.email) {
+      navigate('/login');
+      return;
+    }
+
     if (!subject.trim() || !message.trim()) {
       alert("Please enter both subject and message.");
       return;
@@ -78,10 +97,9 @@ const Support = () => {
     try {
       setSubmitting(true);
       const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-      const email = user?.email || 'guest';
       
       await api.post('/support', {
-        email,
+        email: user.email,
         subject: subject.trim(),
         message: message.trim(),
         date: dateStr
@@ -92,7 +110,7 @@ const Support = () => {
       setSubject('');
       setMessage('');
       setSelectedTopic(null);
-      fetchTickets();
+      fetchTickets(user);
     } catch (e) {
       alert("Failed to submit ticket: " + (e.response?.data?.message || e.message));
     } finally {
@@ -105,6 +123,15 @@ const Support = () => {
     if (filter === 'RESOLVED') return t.status === 'Resolved';
     return true;
   });
+
+  if (!user) {
+    return (
+      <div className="flex-grow bg-[#F8FAFC] py-24 flex flex-col items-center justify-center min-h-[60vh] text-center px-4 font-sans">
+        <div className="w-10 h-10 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mb-3" />
+        <p className="text-slate-600 font-bold text-sm">Please log in to access Customer Support...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-grow bg-[#F8FAFC] py-10 sm:py-14 px-4 sm:px-6 min-h-screen font-sans selection:bg-emerald-500/20 selection:text-emerald-900">
@@ -262,7 +289,7 @@ const Support = () => {
                   <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">Your Support History</h3>
                 </div>
                 <button 
-                  onClick={fetchTickets}
+                  onClick={() => fetchTickets(user)}
                   className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 transition bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100"
                 >
                   <RefreshCw size={13} className={loading ? "animate-spin" : ""} />

@@ -201,11 +201,21 @@ const Home = () => {
                       const shopSection = document.getElementById('shop-section');
                       if (shopSection) window.scrollTo({ top: shopSection.offsetTop - 110, behavior: 'smooth' });
                     }} 
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-2"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-2"
                   >
                     <span>Start Shopping</span>
                     <ArrowRight size={16} />
                   </button>
+
+                  <a 
+                    href="/FreshMart-FinalApp.apk" 
+                    download="FreshMart-FinalApp.apk"
+                    className="bg-white hover:bg-gray-50 text-slate-700 border border-gray-200/90 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center gap-2 group active:scale-95"
+                    title="Download FreshMart Android APK"
+                  >
+                    <Smartphone size={16} className="text-emerald-600 group-hover:scale-110 transition-transform" />
+                    <span>Download App (APK)</span>
+                  </a>
                 </div>
 
               </div>

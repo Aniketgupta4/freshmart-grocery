@@ -127,13 +127,15 @@ const Footer = () => {
                   </a>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <li className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
                   <MapPin size={15} />
                 </div>
-                <span className="leading-snug">
-                  Baniyan Tola, Burhar, Shahdol, MP 484110
-                </span>
+                <div className="min-w-0">
+                  <span className="leading-snug text-slate-600 font-medium">
+                    Baniyan Tola, Burhar, Shahdol, MP 484110
+                  </span>
+                </div>
               </li>
             </ul>
           </div>

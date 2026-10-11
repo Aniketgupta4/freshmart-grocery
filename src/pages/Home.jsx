@@ -210,11 +210,14 @@ const Home = () => {
                   <a 
                     href="/FreshMart-FinalApp.apk" 
                     download="FreshMart-FinalApp.apk"
-                    className="bg-white hover:bg-gray-50 text-slate-700 border border-gray-200/90 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center gap-2 group active:scale-95"
-                    title="Download FreshMart Android APK"
+                    className="bg-white hover:bg-emerald-50/60 text-slate-800 border border-emerald-300/80 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center gap-2 group active:scale-95"
+                    title="Download FreshMart Android APK (Latest Release)"
                   >
                     <Smartphone size={16} className="text-emerald-600 group-hover:scale-110 transition-transform" />
-                    <span>Download App (APK)</span>
+                    <span>Download App (v2.5 APK)</span>
+                    <span className="hidden sm:inline-block px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-extrabold rounded-md ml-1">
+                      Latest
+                    </span>
                   </a>
                 </div>
 

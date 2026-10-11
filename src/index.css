@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #16803C;
+  --color-primary-dark: #11632F;
+  --color-accent: #B7E36A;
+  --color-accent-sale: #E8590C;
+  --color-bg-main: #F7F9F6;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg-main);
+    color: #0F172A;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}

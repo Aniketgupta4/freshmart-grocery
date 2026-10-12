@@ -147,12 +147,32 @@ const Home = () => {
                         : 'bg-white text-slate-700 hover:bg-gray-50 border border-gray-200/80'
                     }`}
                   >
-                    <span className="text-sm">
-                      {((c.emoji || c.image) && (c.emoji || c.image).startsWith('http')) ? (
-                        <img src={c.emoji || c.image} alt={c.name} className="w-4 h-4 object-contain inline" />
-                      ) : (
-                        c.emoji || c.image || '🛒'
-                      )}
+                    <span className="text-sm flex items-center justify-center">
+                      {(() => {
+                        const raw = (c.emoji || c.image || '').trim();
+                        const isImg = raw.startsWith('http') || raw.startsWith('data:') || raw.length > 25;
+                        if (isImg) {
+                          return <img src={raw} alt={c.name} className="w-5 h-5 object-cover rounded-full inline shadow-xs" onError={(e) => { e.target.style.display = 'none'; }} />;
+                        }
+                        if (raw && raw.length <= 4) {
+                          return raw;
+                        }
+                        const nameLower = (c.name || '').toLowerCase();
+                        if (nameLower.includes('biscuit') || nameLower.includes('cookie')) return '🍪';
+                        if (nameLower.includes('choco') || nameLower.includes('sweet')) return '🍫';
+                        if (nameLower.includes('chip') || nameLower.includes('namkeen') || nameLower.includes('snack')) return '🥨';
+                        if (nameLower.includes('atta') || nameLower.includes('flour') || nameLower.includes('grain')) return '🌾';
+                        if (nameLower.includes('rice')) return '🍚';
+                        if (nameLower.includes('dal') || nameLower.includes('pulse')) return '🥣';
+                        if (nameLower.includes('veg')) return '🥦';
+                        if (nameLower.includes('fruit')) return '🍎';
+                        if (nameLower.includes('dairy') || nameLower.includes('milk')) return '🥛';
+                        if (nameLower.includes('tea') || nameLower.includes('coffee') || nameLower.includes('beverage')) return '☕';
+                        if (nameLower.includes('oil') || nameLower.includes('ghee')) return '🫒';
+                        if (nameLower.includes('spice') || nameLower.includes('masala')) return '🌶️';
+                        if (nameLower.includes('sauce') || nameLower.includes('spread')) return '🍯';
+                        return '📦';
+                      })()}
                     </span>
                     <span>{c.name}</span>
                   </button>
@@ -366,8 +386,9 @@ const ProductCard = ({ product, addToCart, isRecentlyAdded }) => {
     navigate(`/product/${product._id || product.id}`);
   };
 
-  const rawImg = product.emoji || product.image;
-  const isEmoji = rawImg && rawImg.length <= 4 && !rawImg.startsWith('http');
+  const rawImg = (product.emoji || product.image || '').trim();
+  const isImage = rawImg.startsWith('http') || rawImg.startsWith('data:') || rawImg.length > 25;
+  const isEmoji = !isImage && rawImg.length <= 4 && rawImg.length > 0;
 
   return (
     <div 
@@ -388,14 +409,18 @@ const ProductCard = ({ product, addToCart, isRecentlyAdded }) => {
           <span className="text-5xl sm:text-6xl transform group-hover:scale-110 transition-transform duration-300 select-none">
             {rawImg}
           </span>
-        ) : (
+        ) : isImage ? (
           <img 
             onError={(e) => { e.target.onerror = null; e.target.src='https://via.placeholder.com/300x300?text=FreshMart'; }} 
-            src={rawImg || 'https://via.placeholder.com/300x300?text=FreshMart'} 
+            src={rawImg} 
             alt={product.name || 'Grocery'} 
             loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" 
           />
+        ) : (
+          <span className="text-5xl sm:text-6xl transform group-hover:scale-110 transition-transform duration-300 select-none">
+            📦
+          </span>
         )}
       </div>
       

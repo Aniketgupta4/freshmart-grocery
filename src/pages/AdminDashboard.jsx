@@ -4,10 +4,43 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Package, ShoppingBag, LayoutDashboard, Settings, Truck, 
   HeadphonesIcon, Tag, Ticket, Box, Trash2, Edit2, CheckCircle2, 
-  XCircle, Clock, ChevronLeft, ChevronRight, RefreshCw, Image as ImageIcon, Upload,
+  XCircle, Clock, ChevronLeft, ChevronRight, RefreshCw, Image as ImageIcon, Upload, Camera, X,
   DollarSign, TrendingUp, Sparkles, AlertCircle, Search, Filter, Phone, Check, ArrowRight,
   Users, UserCheck, UserX, ShieldAlert, Ban, AlertTriangle, ShieldCheck
 } from 'lucide-react';
+
+const compressImageFile = (file, maxWidth = 480, maxHeight = 480, quality = 0.75) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+};
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -1039,7 +1072,7 @@ const AdminDashboard = () => {
                 <Box size={20} className="text-emerald-700" />
                 Add to Catalog
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 <input 
                   type="text" 
                   placeholder="Product Name" 
@@ -1065,22 +1098,97 @@ const AdminDashboard = () => {
                   <option value="">Select Category</option>
                   {safeCategories.map(c => <option key={c._id} value={c.name}>{c.name}</option>)}
                 </select>
-                <div className="grid grid-cols-2 gap-3 w-full">
-                  <input 
-                    type="text" 
-                    placeholder="Emoji / URL" 
-                    value={newProd.emoji} 
-                    onChange={e => setNewProd({...newProd, emoji: e.target.value})} 
-                    className="w-full border border-slate-200 px-3 py-3.5 sm:py-3 rounded-xl outline-none focus:border-emerald-600 text-sm" 
-                  />
-                  <input 
-                    type="text" 
-                    placeholder="Unit (1L)" 
-                    value={newProd.unit} 
-                    onChange={e => setNewProd({...newProd, unit: e.target.value})} 
-                    className="w-full border border-slate-200 px-3 py-3.5 sm:py-3 rounded-xl outline-none focus:border-emerald-600 text-sm" 
-                  />
+                <input 
+                  type="text" 
+                  placeholder="Unit (e.g. 500g, 1 kg, 1 L)" 
+                  value={newProd.unit} 
+                  onChange={e => setNewProd({...newProd, unit: e.target.value})} 
+                  className="w-full border border-slate-200 px-4 py-3.5 sm:py-3 rounded-xl outline-none focus:border-emerald-600 text-sm font-medium" 
+                />
+              </div>
+
+              {/* Product Visual / Image Multi-Option Picker */}
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 mb-5">
+                <label className="block text-[11px] sm:text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
+                  Product Image (Click Photo, Upload, or Paste URL / Emoji)
+                </label>
+                <div className="flex flex-col sm:flex-row items-center gap-2.5">
+                  <div className="relative flex-1 w-full">
+                    <input 
+                      type="text" 
+                      placeholder={newProd.emoji?.startsWith('data:') ? 'Photo attached from camera/gallery' : 'Paste Image URL or Emoji (🍎)'} 
+                      value={newProd.emoji?.startsWith('data:') ? '' : newProd.emoji} 
+                      disabled={newProd.emoji?.startsWith('data:')}
+                      onChange={e => setNewProd({...newProd, emoji: e.target.value})} 
+                      className="w-full border border-slate-200 bg-white px-4 py-2.5 sm:py-3 rounded-xl outline-none focus:border-emerald-600 text-xs sm:text-sm font-medium disabled:bg-slate-100 disabled:text-slate-500" 
+                    />
+                  </div>
+
+                  {/* Camera Click Button */}
+                  <label className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 sm:py-3 rounded-xl cursor-pointer transition font-bold text-xs shadow-xs active:scale-95 flex-shrink-0">
+                    <Camera size={15} />
+                    <span>Click Photo</span>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      capture="environment" 
+                      className="hidden" 
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          try {
+                            const compressed = await compressImageFile(file);
+                            setNewProd({...newProd, emoji: compressed});
+                          } catch(err) { alert('Failed to capture photo'); }
+                        }
+                      }}
+                    />
+                  </label>
+
+                  {/* Upload File Button */}
+                  <label className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2.5 sm:py-3 rounded-xl cursor-pointer transition font-bold text-xs shadow-xs active:scale-95 flex-shrink-0">
+                    <Upload size={15} />
+                    <span>Upload Image</span>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          try {
+                            const compressed = await compressImageFile(file);
+                            setNewProd({...newProd, emoji: compressed});
+                          } catch(err) { alert('Failed to process image'); }
+                        }
+                      }}
+                    />
+                  </label>
                 </div>
+
+                {/* Product Live Preview */}
+                {newProd.emoji && (
+                  <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200 mt-3 shadow-xs">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[11px] font-bold text-slate-400">Preview:</span>
+                      {(newProd.emoji.startsWith('http') || newProd.emoji.startsWith('data:')) ? (
+                        <img src={newProd.emoji} alt="Preview" className="w-12 h-12 object-contain rounded-lg border bg-slate-50" />
+                      ) : (
+                        <span className="text-2xl w-12 h-12 rounded-lg border bg-slate-50 flex items-center justify-center">{newProd.emoji}</span>
+                      )}
+                      <span className="text-xs font-bold text-emerald-700">
+                        {newProd.emoji.startsWith('data:') ? '✓ Photo Ready' : '✓ Visual Ready'}
+                      </span>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => setNewProd({...newProd, emoji: ''})} 
+                      className="text-xs font-bold text-rose-600 hover:text-rose-700 px-2.5 py-1 hover:bg-rose-50 rounded-lg transition"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end">
@@ -1100,13 +1208,13 @@ const AdminDashboard = () => {
                  .map(p => (
                  <div key={p._id || p.id} className={`bg-white border ${p.isAvailable !== false ? 'border-slate-200/80 shadow-sm' : 'border-dashed border-slate-300 opacity-60'} rounded-[2rem] p-5 flex flex-col justify-between hover:shadow-md transition-all group`}>
                     <div className="flex items-start gap-4 mb-4">
-                      {((p.emoji || p.image) && ((p.emoji || p.image).startsWith('http') || (p.emoji || p.image).startsWith('data:'))) ? (
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-slate-50 border border-slate-100 rounded-2xl flex-shrink-0 flex items-center justify-center p-2 shadow-inner">
+                      {((p.emoji || p.image) && ((p.emoji || p.image).startsWith('http') || (p.emoji || p.image).startsWith('data:') || (p.emoji || p.image).length > 25)) ? (
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-slate-50 border border-slate-100 rounded-2xl flex-shrink-0 flex items-center justify-center p-2 shadow-inner overflow-hidden">
                           <img src={p.emoji || p.image} alt={p.name} className="w-full h-full object-contain" />
                         </div>
                       ) : (
                         <div className="w-14 h-14 sm:w-16 sm:h-16 bg-slate-50 border border-slate-100 rounded-2xl flex-shrink-0 flex items-center justify-center text-2xl sm:text-3xl shadow-inner">
-                          {p.emoji || p.image}
+                          {((p.emoji || p.image) && (p.emoji || p.image).length <= 4) ? (p.emoji || p.image) : '📦'}
                         </div>
                       )}
                       <div className="flex-1 mt-1 min-w-0">
@@ -1155,55 +1263,108 @@ const AdminDashboard = () => {
                    className="w-full border border-slate-200 px-4 py-3.5 sm:py-3 rounded-xl outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/10 text-sm font-medium" 
                  />
                  
-                 <div>
-                   <label className="block text-[10px] sm:text-xs font-extrabold text-slate-600 uppercase tracking-wider mb-2">
-                     Visual Asset (Emoji, URL, or File)
-                   </label>
-                   <div className="flex flex-col sm:flex-row gap-3">
-                     <div className="relative flex-1">
-                       <input 
-                         type="text" 
-                         placeholder="Paste URL or Emoji (🥛)" 
-                         value={newCatEmoji} 
-                         onChange={e => setNewCatEmoji(e.target.value)} 
-                         className="w-full border border-slate-200 px-4 py-3.5 sm:py-3 rounded-xl outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/10 text-sm" 
-                       />
-                     </div>
-                     <label className="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 px-5 py-3.5 sm:py-3 rounded-xl cursor-pointer transition font-bold border border-slate-200 text-sm active:scale-95 shadow-sm">
-                       <Upload size={16} />
-                       <span>Upload File</span>
-                       <input 
-                         type="file" 
-                         accept="image/*" 
-                         className="hidden" 
-                         onChange={(e) => {
-                           const file = e.target.files[0];
-                           if (file) {
-                             if (file.size > 2 * 1024 * 1024) return alert("Please select an image smaller than 2MB.");
-                             const reader = new FileReader();
-                             reader.onloadend = () => setNewCatEmoji(reader.result);
-                             reader.readAsDataURL(file);
-                           }
-                         }}
-                       />
-                     </label>
-                   </div>
-                 </div>
+                  <div>
+                    <label className="block text-[10px] sm:text-xs font-extrabold text-slate-600 uppercase tracking-wider mb-2">
+                      Visual Asset (Photo, Upload, or Emoji/URL)
+                    </label>
+                    <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
+                      <div className="relative flex-1">
+                        <input 
+                          type="text" 
+                          placeholder="Paste URL or Emoji (🍪, 🍫, 🥛)" 
+                          value={(newCatEmoji && newCatEmoji.startsWith('data:')) ? 'Photo attached' : newCatEmoji} 
+                          onChange={e => {
+                            if (!newCatEmoji.startsWith('data:') || e.target.value !== 'Photo attached') {
+                              setNewCatEmoji(e.target.value);
+                            }
+                          }}
+                          readOnly={newCatEmoji && newCatEmoji.startsWith('data:')}
+                          className={`w-full border border-slate-200 px-4 py-3 sm:py-2.5 rounded-xl outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/10 text-xs sm:text-sm font-medium ${
+                            newCatEmoji && newCatEmoji.startsWith('data:') ? 'bg-emerald-50 text-emerald-800 font-bold border-emerald-200' : 'bg-white'
+                          }`}
+                        />
+                        {newCatEmoji && newCatEmoji.startsWith('data:') && (
+                          <button
+                            type="button"
+                            onClick={() => setNewCatEmoji('')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-rose-600"
+                          >
+                            Clear
+                          </button>
+                        )}
+                      </div>
 
-                 {newCatEmoji && (
-                   <div className="flex items-center gap-4 p-3 bg-slate-50 rounded-xl border border-slate-200">
-                     <span className="text-[10px] sm:text-xs font-bold text-slate-400">Preview:</span>
-                     {(newCatEmoji.startsWith('http') || newCatEmoji.startsWith('data:')) ? (
-                       <img src={newCatEmoji} alt="Preview" className="w-12 h-12 object-contain rounded-lg border bg-white" />
-                     ) : (
-                       <span className="text-2xl sm:text-3xl bg-white w-12 h-12 rounded-lg border flex items-center justify-center">{newCatEmoji}</span>
-                     )}
-                   </div>
-                 )}
-                 
-                 <button onClick={handleAddCategory} className="w-full sm:w-auto bg-[#0F392B] hover:bg-[#16503c] text-white px-8 py-3.5 sm:py-3 rounded-2xl font-black text-sm shadow-md transition active:scale-95 mt-2">
-                   Save Category
-                 </button>
+                      {/* Camera Button */}
+                      <label className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2.5 sm:py-3 rounded-xl cursor-pointer transition font-bold text-xs shadow-xs active:scale-95 flex-shrink-0">
+                        <Camera size={15} />
+                        <span>Click Photo</span>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          capture="environment" 
+                          className="hidden" 
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              try {
+                                const compressed = await compressImageFile(file, 400, 400, 0.75);
+                                setNewCatEmoji(compressed);
+                              } catch(err) { alert('Failed to process photo'); }
+                            }
+                          }}
+                        />
+                      </label>
+
+                      {/* Upload File Button */}
+                      <label className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2.5 sm:py-3 rounded-xl cursor-pointer transition font-bold text-xs shadow-xs active:scale-95 flex-shrink-0">
+                        <Upload size={15} />
+                        <span>Upload Image</span>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              try {
+                                const compressed = await compressImageFile(file, 400, 400, 0.75);
+                                setNewCatEmoji(compressed);
+                              } catch(err) { alert('Failed to process image'); }
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+
+                    {/* Category Live Preview */}
+                    {newCatEmoji && (
+                      <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200 mt-3 shadow-xs">
+                        <div className="flex items-center gap-3">
+                          <span className="text-[11px] font-bold text-slate-400">Preview:</span>
+                          {(newCatEmoji.startsWith('http') || newCatEmoji.startsWith('data:')) ? (
+                            <img src={newCatEmoji} alt="Preview" className="w-12 h-12 object-contain rounded-lg border bg-slate-50" />
+                          ) : (
+                            <span className="text-2xl w-12 h-12 rounded-lg border bg-slate-50 flex items-center justify-center">
+                              {newCatEmoji.length <= 4 ? newCatEmoji : '🛒'}
+                            </span>
+                          )}
+                          <span className="text-xs font-bold text-emerald-700">
+                            {newCatEmoji.startsWith('data:') ? '✓ Photo Ready' : '✓ Visual Ready'}
+                          </span>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => setNewCatEmoji('')} 
+                          className="text-xs font-bold text-rose-600 hover:text-rose-700 px-2.5 py-1 hover:bg-rose-50 rounded-lg transition"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <button onClick={handleAddCategory} className="w-full sm:w-auto bg-[#0F392B] hover:bg-[#16503c] text-white px-8 py-3.5 sm:py-3 rounded-2xl font-black text-sm shadow-md transition active:scale-95 mt-2">
+                    Save Category
+                  </button>
                </div>
             </div>
 
@@ -1214,13 +1375,13 @@ const AdminDashboard = () => {
                    <button onClick={() => handleDeleteCategory(c._id)} className="absolute top-2 right-2 p-2 sm:p-1.5 bg-white text-slate-300 hover:text-red-500 rounded-full md:opacity-0 group-hover:opacity-100 transition shadow-sm border border-slate-100 active:scale-95">
                      <Trash2 size={14} />
                    </button>
-                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mb-3 shadow-inner">
-                     {((c.emoji || c.image) && ((c.emoji || c.image).startsWith('http') || (c.emoji || c.image).startsWith('data:'))) ? (
-                       <img src={c.emoji || c.image} alt={c.name} className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
-                     ) : (
-                       <span className="text-2xl sm:text-3xl">{c.emoji || c.image}</span>
-                     )}
-                   </div>
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mb-3 shadow-inner overflow-hidden">
+                      {((c.emoji || c.image) && ((c.emoji || c.image).startsWith('http') || (c.emoji || c.image).startsWith('data:') || (c.emoji || c.image).length > 25)) ? (
+                        <img src={c.emoji || c.image} alt={c.name} className="w-full h-full object-contain p-1" />
+                      ) : (
+                        <span className="text-2xl sm:text-3xl">{((c.emoji || c.image) && (c.emoji || c.image).length <= 4) ? (c.emoji || c.image) : '🛒'}</span>
+                      )}
+                    </div>
                    <span className="font-extrabold text-slate-800 text-[11px] sm:text-xs text-center leading-tight truncate w-full px-1">{c.name}</span>
                 </div>
               ))}

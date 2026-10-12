@@ -196,10 +196,9 @@ const ProductDetails = () => {
     );
   }
 
-  const isImage = (product.emoji || product.image) && (
-    (product.emoji || product.image).startsWith('http') || 
-    (product.emoji || product.image).startsWith('data:')
-  );
+  const rawImg = (product.emoji || product.image || '').trim();
+  const isImage = rawImg.startsWith('http') || rawImg.startsWith('data:') || rawImg.length > 25;
+  const isEmoji = !isImage && rawImg.length <= 4 && rawImg.length > 0;
   const mrp = (product.price || 0) + 15;
   const currentTotal = (inCartQty > 0 ? inCartQty : 1) * (product.price || 0);
 
@@ -290,9 +289,13 @@ const ProductDetails = () => {
                       }}
                     />
                   </>
+                ) : isEmoji ? (
+                  <span className="text-8xl sm:text-9xl transform group-hover:scale-110 transition-transform duration-300 select-none">
+                    {rawImg}
+                  </span>
                 ) : (
                   <span className="text-8xl sm:text-9xl transform group-hover:scale-110 transition-transform duration-300 select-none">
-                    {product.emoji || product.image || '🛍️'}
+                    🛍️
                   </span>
                 )}
               </div>

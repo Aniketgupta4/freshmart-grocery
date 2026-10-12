@@ -4,7 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   User, Package, MapPin, Clock, Star, Phone, ChevronRight, 
   X, Edit2, LogOut, CheckCircle2, ShieldCheck, Zap, 
-  Receipt, ArrowUpRight, HeadphonesIcon, Printer, ShoppingBag
+  Receipt, ArrowUpRight, HeadphonesIcon, Printer, ShoppingBag,
+  Ban, ShieldAlert
 } from 'lucide-react';
 
 const OrderTimer = ({ order }) => {
@@ -42,6 +43,7 @@ const Profile = () => {
   const [editAddress, setEditAddress] = useState('');
   const [showBill, setShowBill] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [accountStatus, setAccountStatus] = useState(null);
 
   const showToast = (message, type = 'success') => {
     setNotification({ message, type });
@@ -61,6 +63,13 @@ const Profile = () => {
     setEditPhone(u.phone || '');
     setEditAddress(u.address || '');
     fetchOrders(u.email);
+
+    // Fetch account safety status
+    api.get(`/users/status/${u.email}`)
+      .then(res => {
+        if (res.data) setAccountStatus(res.data);
+      })
+      .catch(() => {});
   }, [navigate]);
 
   const fetchOrders = async (email) => {
@@ -202,9 +211,15 @@ const Profile = () => {
                   <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                     {user?.name}
                   </h1>
-                  <span className="bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <CheckCircle2 size={12} className="text-emerald-600" /> VERIFIED
-                  </span>
+                  {accountStatus?.isBlocked ? (
+                    <span className="bg-rose-50 text-rose-800 border border-rose-300 text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                      <Ban size={12} className="text-rose-600" /> SUSPENDED
+                    </span>
+                  ) : (
+                    <span className="bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <CheckCircle2 size={12} className="text-emerald-600" /> VERIFIED
+                    </span>
+                  )}
                 </div>
                 <p className="text-slate-500 text-sm font-medium mt-0.5">{user?.email}</p>
                 <div className="flex items-center gap-3 mt-2 text-xs text-slate-600 font-semibold">
@@ -238,6 +253,44 @@ const Profile = () => {
             </div>
 
           </div>
+
+          {/* Account Suspension Banner in Profile */}
+          {accountStatus?.isBlocked && (
+            <div className="mt-6 pt-5 border-t border-rose-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-rose-50/60 p-4 rounded-2xl border border-rose-200">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-100 border border-rose-300 text-rose-600 flex items-center justify-center shrink-0">
+                  <Ban size={20} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-rose-950 uppercase tracking-wide">
+                      Ordering Privileges Suspended
+                    </span>
+                    {accountStatus.remainingDays ? (
+                      <span className="text-[11px] font-extrabold bg-rose-200 text-rose-800 px-2 py-0.5 rounded">
+                        ⏳ {accountStatus.remainingDays} days left
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-extrabold bg-rose-200 text-rose-800 px-2 py-0.5 rounded">
+                        Indefinite
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-rose-700 mt-0.5 font-medium">
+                    {accountStatus.blockReason 
+                      ? `Reason: "${accountStatus.blockReason}"` 
+                      : 'Your account was suspended by admin due to repeated cancellations or violations.'}
+                  </p>
+                </div>
+              </div>
+              <Link 
+                to="/support" 
+                className="text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl transition-colors shadow-sm shrink-0"
+              >
+                Contact Support
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* MAIN BODY GRID */}

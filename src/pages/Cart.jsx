@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   ShoppingBag, Trash2, ArrowRight, ShieldCheck, MapPin, Phone, 
   Ticket, Minus, Plus, Receipt, Zap, CheckCircle2, Clock, 
-  Sparkles, AlertCircle, ChevronRight, Lock
+  Sparkles, AlertCircle, ChevronRight, Lock, Ban, ShieldAlert
 } from 'lucide-react';
 
 const Cart = () => {
@@ -19,6 +19,7 @@ const Cart = () => {
   const [deliveryInstruction, setDeliveryInstruction] = useState('no-contact');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [accountStatus, setAccountStatus] = useState(null);
   
   let user = null; 
   try { user = JSON.parse(localStorage.getItem('user')); } catch(e) {}
@@ -56,6 +57,13 @@ const Cart = () => {
     if (user) {
       setAddress(user.address || '');
       setPhone(user.phone || '');
+
+      // Check account safety / suspension status
+      api.get(`/users/status/${user.email}`)
+        .then(res => {
+          if (res.data) setAccountStatus(res.data);
+        })
+        .catch(() => {});
     }
   }, [navigate]);
 
@@ -126,6 +134,17 @@ const Cart = () => {
 
   const placeOrder = async () => {
     if (cart.length === 0) return;
+
+    if (accountStatus?.isBlocked) {
+      showToast(
+        accountStatus.blockReason 
+          ? `Account restricted: ${accountStatus.blockReason}` 
+          : 'Your account is currently suspended from placing orders.', 
+        'error'
+      );
+      return;
+    }
+
     if (!address.trim() || !phone.trim()) {
       showToast('Please provide delivery address and contact number', 'error');
       return;
@@ -165,7 +184,15 @@ const Cart = () => {
         navigate('/profile');
       }, 1200);
     } catch (err) {
-      showToast('Failed to place order. Please try again.', 'error');
+      const errMsg = err.response?.data?.message || 'Failed to place order. Please try again.';
+      showToast(errMsg, 'error');
+      if (err.response?.status === 403) {
+        setAccountStatus({
+          isBlocked: true,
+          blockReason: err.response?.data?.reason,
+          remainingDays: err.response?.data?.remainingDays
+        });
+      }
       setIsSubmitting(false);
     }
   };
@@ -218,6 +245,47 @@ const Cart = () => {
             </div>
           </div>
         </div>
+
+        {/* Account Suspension Banner */}
+        {accountStatus?.isBlocked && (
+          <div className="mb-8 bg-rose-50 border-2 border-rose-200 rounded-3xl p-5 sm:p-6 text-rose-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 shadow-sm">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-rose-100 border border-rose-300 text-rose-600 flex items-center justify-center shrink-0 shadow-inner">
+                <Ban size={26} />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-1">
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-rose-200 text-rose-900 px-2.5 py-0.5 rounded-md">
+                    Account Temporarily Suspended
+                  </span>
+                  {accountStatus.remainingDays ? (
+                    <span className="text-xs font-black text-rose-700 bg-rose-100 px-2 py-0.5 rounded-md">
+                      ⏳ {accountStatus.remainingDays} days remaining
+                    </span>
+                  ) : (
+                    <span className="text-xs font-black text-rose-700 bg-rose-100 px-2 py-0.5 rounded-md">
+                      Indefinite
+                    </span>
+                  )}
+                </div>
+                <h4 className="font-black text-base text-rose-950 tracking-tight">
+                  Checkout is locked for your account
+                </h4>
+                <p className="text-rose-800 text-xs sm:text-sm mt-1 font-medium max-w-2xl">
+                  {accountStatus.blockReason 
+                    ? `Reason: "${accountStatus.blockReason}"` 
+                    : 'Your account was suspended due to frequent return/cancellation requests or policy violations.'} If you think this is a mistake, please reach out to customer support.
+                </p>
+              </div>
+            </div>
+            <Link 
+              to="/support" 
+              className="shrink-0 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-600/20 active:scale-95"
+            >
+              Contact Support
+            </Link>
+          </div>
+        )}
 
         {cart.length === 0 ? (
           /* LUXURY EMPTY STATE */
@@ -555,12 +623,25 @@ const Cart = () => {
                 {/* Primary Place Order CTA */}
                 <button 
                   onClick={placeOrder} 
-                  disabled={isSubmitting}
-                  className="w-full mt-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white py-4.5 rounded-2xl font-black text-lg transition-all shadow-xl shadow-emerald-600/25 flex items-center justify-center gap-2 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed group"
+                  disabled={isSubmitting || accountStatus?.isBlocked}
+                  className={`w-full mt-2 py-4.5 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed group ${
+                    accountStatus?.isBlocked 
+                      ? 'bg-slate-300 text-slate-600 shadow-none' 
+                      : 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white shadow-xl shadow-emerald-600/25'
+                  }`}
                 >
-                  <Lock size={18} />
-                  <span>{isSubmitting ? 'Placing Order...' : `Place Order • ₹${finalTotal}`}</span>
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  {accountStatus?.isBlocked ? (
+                    <>
+                      <Ban size={18} />
+                      <span>Account Suspended</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock size={18} />
+                      <span>{isSubmitting ? 'Placing Order...' : `Place Order • ₹${finalTotal}`}</span>
+                      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
                 </button>
 
                 {/* Trust Badges */}
